@@ -8,7 +8,10 @@
     "dev": "npx nodemon index.js",
     "start": "node index.js"
   },
-  "keywords": ["API", "Bookstore"],
+  "keywords": [
+    "API",
+    "Bookstore"
+  ],
   "author": "Jeisson Francois Rosas Céspedes <jeisson.rosas@bit.institute>",
   "license": "ISC",
   "dependencies": {
