@@ -17,6 +17,9 @@ router.patch('/:id', api_client.insertDetalleVenta)
 // DELETE by ID
 router.delete('/:id', api_client.deleteVenta)
 
+// DELETE by ID
+router.delete('/:id?/eliminarDetalle/:idDetalle', api_client.deleteVentaDetalle)
+
 // GET detalle by ID
 router.get('/:id/:idDetalle?', api_client.getVentaDetalle)
 

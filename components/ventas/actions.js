@@ -98,6 +98,16 @@ exports.deleteVenta = (req, res) => {
   })
 }
 
+exports.deleteVentaDetalle = (req, res) => {
+  Venta.updateOne({ "_id": req.params.id }, { "$pull": { "detalles": {"_id":req.params.idDetalle} } }, function (err, ventaActualizada) {
+    if (err || !ventaActualizada) {
+        res.status(404).json({ status: "error", data: "No se ha encontrado la venta con id: "+req.params.id+" err="+err});
+    } else {
+        res.status(200).json({ status: "ok", data: req.body });
+    }
+})
+}
+
 exports.insertDetalleVenta = (req, res) => {
   /* El body contiene un objeto tipo detalle 
     idLibro: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'libros' },
