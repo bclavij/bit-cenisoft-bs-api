@@ -1,12 +1,10 @@
 const Libro = require('./model')
-const con = require('../../db')
-
 
 exports.createLibro = (req, res) => {
   const newLibro = new Libro(req.body)
   newLibro.save((error, clientSaved) => {
     if (error) {
-      console.error('Error saving client ', error)
+      console.error('Error guardando libro ', error)
       res.status(500).send(error)
     } else {
       res.send(clientSaved)
@@ -16,19 +14,29 @@ exports.createLibro = (req, res) => {
 
 exports.getLibro = (req, res) => {
   if (req.params.id) {
-      Libro.findById(req.params.id, function (err, unProducto) {
-        if (err || !unProducto) {
+      Libro.findById(req.params.id, function (err, unLibro) {
+        if (err || !unLibro) {
             res.status(404).json({ status: "error", data: "No se ha encontrado el libro con id: "+req.params.id});
         } else {
-            res.status(200).json({ status: "ok", data: unProducto });
+            res.status(200).json({ status: "ok", data: unLibro });
         }
     })
+  } else if (req.query.name) {
+    let query = req.query
+    query = { name: new RegExp(`.*${req.query.name}.*`,'i') }
+     Libro.find(query, function (err, unLibro) {
+      if (err || !unLibro) {
+          res.status(404).json({ status: "error", data: "No se ha encontrado el libro con los parametros seleccionados"});
+      } else {
+          res.status(200).json({ status: "ok", data: unLibro });
+      }
+    })
   } else {
-      Libro.find({}, function (err, todosProductos) {
+      Libro.find({}, function (err, todosLibros) {
         if (err){
           return (res.type('json').status(422).send({ status: "error", data: "No se puede procesar la entidad, datos incorrectos!" }));
         } else {
-          res.status(200).json({ status: "ok", data: todosProductos });
+          res.status(200).json({ status: "ok", data: todosLibros });
         }
       })
   }

@@ -1,6 +1,4 @@
 const Client = require('./model')
-const con = require('../../db')
-
 
 exports.createClient = (req, res) => {
   const newClient = new Client(req.body)
@@ -16,20 +14,20 @@ exports.createClient = (req, res) => {
 
 exports.getClient = (req, res) => {
   if (req.params.id) {
-      Client.findById(req.params.id, function (err, unProducto) {
-        if (err) {
+      Client.findById(req.params.id, function (err, clientes) {
+        if (err || !clientes) {
             // Devolvemos el código HTTP 404, de producto no encontrado por su id.
             res.status(404).json({ status: "error", data: "No se ha encontrado el cliente con id: "+req.params.id});
         } else {
-            res.status(200).json({ status: "ok", data: unProducto });
+            res.status(200).json({ status: "ok", data: clientes });
         }
     })
   } else {
-      Client.find({}, function (err, todosProductos) {
+      Client.find({}, function (err, todosClientes) {
         if (err){
           return (res.type('json').status(422).send({ status: "error", data: "No se puede procesar la entidad, datos incorrectos!" }));
         } else {
-          res.status(200).json({ status: "ok", data: todosProductos });
+          res.status(200).json({ status: "ok", data: todosClientes });
         }
       })
   }
@@ -37,7 +35,7 @@ exports.getClient = (req, res) => {
 
 exports.updateClient = (req, res) => {
   Client.findByIdAndUpdate(req.params.id, {$set: req.body}, function (err, clienteActualizado) {
-        if (err) {
+        if (err || !clienteActualizado) {
             res.status(404).json({ status: "error", data: "No se ha encontrado el cliente con id: "+req.params.id+" err="+err});
         } else {
             res.status(200).json({ status: "ok", data: req.body });
