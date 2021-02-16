@@ -31,52 +31,6 @@ exports.getVenta = (req, res) => {
       })
   }
 }
-exports.getVentaDetalle = (req, res) => {
-
-
-  Detalle.find({
-    'detalles': {
-      $elemMatch : {
-        '_id': req.params.idDetalle
-      }
-    }
-  },function(err,detalle){
-    if(err){
-      return done(err);
-    }
-    if(detalle){
-      res.status(200).json({ data: detalle });
-    }
-  });
-
-
-  /*if (req.params.id) {
-      Venta.findById(req.params.id, function (err, venta) {
-        if (err || !venta) {
-            res.status(404).json({ status: "error", data: "No se ha encontrado la venta con id: "+req.params.id});
-        } else {
-          if (req.params.idDetalle) {
-            let detalle = Venta.find({
-              'detalles._id':req.params.idDetalle
-            })
-            res.status(200).json({ status: "ok", data: detalle });
-          } else {
-            res.status(200).json({ status: "ok", data: venta.detalles });
-          }
-          
-            
-        }
-    })
-  } else {
-      Venta.find({}, function (err, ventas) {
-        if (err){
-          return (res.type('json').status(422).send({ status: "error", data: "No se puede procesar la entidad, datos incorrectos!" }));
-        } else {
-          res.status(200).json({ status: "ok", data: ventas });
-        }
-      })
-  }*/
-}
 
 exports.updateVenta = (req, res) => {
   Venta.updateOne({"_id":req.params.id}, {$set: req.body}, function (err, ventaActualizada) {
@@ -101,9 +55,9 @@ exports.deleteVenta = (req, res) => {
 exports.deleteVentaDetalle = (req, res) => {
   Venta.updateOne({ "_id": req.params.id }, { "$pull": { "detalles": {"_id":req.params.idDetalle} } }, function (err, ventaActualizada) {
     if (err || !ventaActualizada) {
-        res.status(404).json({ status: "error", data: "No se ha encontrado la venta con id: "+req.params.id+" err="+err});
+        res.status(404).json({ status: "error", data: "Ocurrió un error eliminado el detalle. Error:"+err});
     } else {
-        res.status(200).json({ status: "ok", data: req.body });
+        res.status(200).json({ status: "ok", data: "Se ha eliminado exitosamente el detalle con id: "+req.params.idDetalle });
     }
 })
 }
@@ -131,11 +85,13 @@ exports.updateDetalleVenta = (req, res) => {
     valorUnitario: { type: Number, required: true, min: 0 },
     Cantidad:{ type: Number, required: true, min: 1 }
     */
-  Venta.updateOne({ "_id": req.params.id }, { "$push": { "detalles": req.body } }, function (err, ventaActualizada) {
+  Venta.updateOne({ "_id": req.params.id }, { "$set": { "detalles.$[detalle]": req.body } }, 
+  {arrayFilters:[{"detalle._id": req.params.idDetalle}]}, function (err, ventaActualizada) {
       if (err || !ventaActualizada) {
-          res.status(404).json({ status: "error", data: "No se ha encontrado la venta con id: "+req.params.id+" err="+err});
+          res.status(404).json({ status: "error", data: "No se ha encontrado el detalle de venta con id: "+req.params.idDetalle+" err="+err});
       } else {
-          res.status(200).json({ status: "ok", data: req.body });
+          res.status(200).json({ status: "ok", data: "Se ha actualizado exitósamente el detalle con id:"+req.params.idDetalle });
       }
   })
+
 }
