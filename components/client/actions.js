@@ -5,6 +5,7 @@ exports.createClient = (req, res) => {
   newClient.save((error, clientSaved) => {
     if (error) {
       console.error('Error saving client ', error)
+      res.status(404).json({ status: "error", data: "Error creando cliente. Error:"+error});
       res.status(500).send(error)
     } else {
       res.send(clientSaved)
