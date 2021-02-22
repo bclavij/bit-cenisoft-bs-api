@@ -1,4 +1,5 @@
 const Client = require('./model')
+const service = require('../../services');
 
 exports.createClient = (req, res) => {
   const newClient = new Client(req.body)
@@ -9,6 +10,19 @@ exports.createClient = (req, res) => {
       res.status(500).send(error)
     } else {
       res.send(clientSaved)
+    }
+  })
+}
+
+exports.authClient = (req, res) => {
+  Client.findOne({ email: req.body.email }, (error, client) => {
+    if (error) {
+      res.status(422).send(error)
+    } else if (client && req.body.password==client.password) { // Si el cliente es encontrado, debemos construir y devolver la llave (JWT)
+      //res.send({ jwt: generateToken(client) })
+      return res.status(200).send({ status: "ok", token: service.createToken(client) });
+    } else { // Cuando el cliente esta vacio, es decir, cuando no se encontró
+      res.status(401).send({ msg: 'Invalid email or password' })
     }
   })
 }
@@ -52,4 +66,7 @@ exports.deleteClient = (req, res) => {
           res.status(200).json({ status: "ok", data: "Se ha eliminado correctamente el cliente con id: "+req.params.id });
       }
   })
+
+  
+  
 }

@@ -8,6 +8,9 @@ router.get('/:id?', api_client.getClient)
 // POST Create a Client
 router.post('/', api_client.createClient)
 
+// GET Authenticate
+router.get('/auth/login', api_client.authClient)
+
 // PUT Update a Client's info
 router.put('/:id', api_client.updateClient)
 
